@@ -1,0 +1,32 @@
+ReadMe File:
+
+(a) install node js and monogodb:
+		1) npm install node
+		2) npm install mongodb
+
+
+(b) npm install 
+
+(c) Start Server : 
+		node app.js or nodejs app.js
+
+(d)open browser:
+		localhost:3000		  
+
+For Private Chat Type:
+
+/w [name] [message]
+
+name: To whom you want to send private message
+
+To Send File:
+
+Type name of the file and click Send File button
+
+To Send File to specific person
+
+/w [name] [fileName]
+
+Note: For above instructions to work "FILE" should be present in the same directory.
+
+

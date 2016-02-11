@@ -31,8 +31,7 @@ app.get('/', function(req, res){
 });
 
 io.sockets.on('connection', function(socket){
-	var query = Chat.find({});
-	query.sort('-created').limit(8).exec(function(err, docs){
+	Chat.find(function(err, docs){
 		if(err) throw err;
 		console.log('Sending old messages');
 		socket.emit('load old messages', docs);
