@@ -2,15 +2,39 @@ var express = require('express'),
 	app = express(),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server),
+	mongoose = require('mongoose'),
 	users = {};
 	
 server.listen(3000);
+
+mongoose.connect('mongodb://localhost/chat', function(err) {
+	if(err) {
+		console.lod(err);
+	} else {
+		console.log('connected to mongodb!');
+	}
+});
+
+var chatSchema = mongoose.Schema({
+	//name: {first: String, last: String},
+	nick: String,
+	msg: String,
+	created: {type: Date, default: Date.now}
+});
+//create a collection inside of your database
+var Chat = mongoose.model('Message', chatSchema);
+
 
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/index.html');
 });
 
 io.sockets.on('connection', function(socket){
+	Chat.find(function(err, docs){
+		if(err) throw err;
+		console.log('Sending old messages');
+		socket.emit('load old messages', docs);
+	});
 	socket.on('new user', function(data, callback){
 		if (data in users){
 			callback(false);
@@ -46,7 +70,12 @@ io.sockets.on('connection', function(socket){
 				callback('Error!  Please enter a message for your whisper.');
 			}
 		} else{
-			io.sockets.emit('new message', {msg: msg, nick: socket.nickname});
+			var newMsg = new Chat({msg: msg, nick: socket.nickname});
+			newMsg.save(function(err) {
+				if(err) throw err;
+				io.sockets.emit('new message', {msg: msg, nick: socket.nickname});
+			});
+			
 		}
 	});
 	
